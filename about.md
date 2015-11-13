@@ -4,12 +4,9 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+I'm a System Administrator, currently employed by the [Network Startup Resource Center](https://nsrc.org).
+I teach UNIX systems best practices in Africa and Asia. 
 
-### More Information
-
-A place to include any other types of information that you'd like to include about yourself.
-
-### Contact me
-
-[email@domain.com](mailto:email@domain.com)
+My current interests include Wireless access networks, devops, and technology that simplifies
+deployment, maintenance, and scalability -- including Vagrant, KVM/libvirt, Docker, CoreOS, and
+Ganeti.
