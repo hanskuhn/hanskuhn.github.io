@@ -19,7 +19,7 @@ because I didn't have a current version of that file saved anywhere.
 Here's the filesystems on my ERL-3
 
 {%highlight bash %}
-admin@gw:~$ lsblk
+router$ lsblk
 NAME      MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
 sda         8:0    1   7.5G  0 disk
 |-sda1      8:1    1   142M  0 part
