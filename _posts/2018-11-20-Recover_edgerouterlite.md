@@ -46,7 +46,7 @@ I copied /mnt/w/config/config.boot to a webserver so I could later load
 the config.boot file over HTTP.
 
 Now I needed to bootstrap the ERL-3 with a new system image. Ubiquiti has a tool
-called emrk. It lives at http://packages.vyos.net/tools/emrk/
+called emrk. It lives at [http://packages.vyos.net/tools/emrk/](http://packages.vyos.net/tools/emrk/)
 
 Format an 8G+ USB thumb drive with FAT32 filesystem and MBR disklabel. I used my 
 Macbook Air and DiskUtility.app for this step. Copy emrk-0.9c.bin to the 
@@ -79,7 +79,7 @@ router# emrk-reinstall
 This process will prompt you several times and you will need to provide 
 the URL to the latest version the Edgemax OS.
 
-http://dl.ubnt.com/firmwares/edgemax/v1.7.0/ER-e100.v1.7.0.4783374.tar
+[http://dl.ubnt.com/firmwares/edgemax/v1.7.0/ER-e100.v1.7.0.4783374.tar](http://dl.ubnt.com/firmwares/edgemax/v1.7.0/ER-e100.v1.7.0.4783374.tar)
 
 Unplug the router from any LAN until you have an initial configuration.
 
