@@ -83,8 +83,33 @@ http://dl.ubnt.com/firmwares/edgemax/v1.7.0/ER-e100.v1.7.0.4783374.tar
 
 Unplug the router from any LAN until you have an initial configuration.
 
+Initial login is ubnt:ubnt. First thing is to create a new user and delete 
+the default user, ubnt.
+
 {%highlight bash %}
-host# cd /path/to/disk_image/
-host# sudo -Hu unprivuser nohup python -m SimpleHTTPServer 8822
+router$ configure
+router# set system login user admin plaintext-password YOURPASSWORDHERE
+router# set system login user admin level admin
+router# commit;save
 {%endhighlight %}
+
+Log out and log back in as the admin user. Then you can delete the ubnt user:
+
+{%highlight bash %}
+router$ configure
+router# delete system login user ubnt 
+router# commit;save
+{%endhighlight bash %}
+
+Finally I loaded the configuration I stashed earlier on my webserver:
+
+{%highlight bash %}
+router$ configure
+router# load http://www.example.com/config.boot
+router# commit;save
+router# exit
+router$ reboot now
+{%endhighlight %}
+
+
 
