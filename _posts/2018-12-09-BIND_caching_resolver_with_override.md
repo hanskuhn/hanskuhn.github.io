@@ -72,17 +72,19 @@ options {
 	listen-on-v6 { any; };
 };
 
-#logging {
-#  channel rpz-queries {
-#    file "/var/log/bind/saut.ac.tz_internal.log" versions 10 size 500k;
-#    severity info;
-#  };
-#  category rpz {
-#    rpz-queries;
-#  };
-#};
+logging {
+  channel rpz-queries {
+    file "/var/log/bind/saut.ac.tz_internal.log" versions 10 size 500k;
+    severity info;
+  };
+  category rpz {
+    rpz-queries;
+  };
+};
 {%endhighlight %}
 
-The logging stanza will log any requests that match the response policy zone.
-The logging is commented out here because the apparmor profile for bind in 16.04 won't allow named
-to write to /var/log/bind/saut.ac.tz_internal.log. I'll debug this later.
+I had to modify /etc/apparmor.d/usr.sbin.named to allow bind to write to the logfile.
+
+{%highlight bash %}
+/var/log/bind/saut.ac.tz_internal.log rw,
+{%endhighlight %}
