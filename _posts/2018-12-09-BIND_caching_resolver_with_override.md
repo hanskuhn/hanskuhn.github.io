@@ -1,6 +1,8 @@
 ---
 layout: post
 title: BIND caching resolver with internal RRs
+categories: [systems, networking]
+tags: [DNS]
 published: false
 ---
 
