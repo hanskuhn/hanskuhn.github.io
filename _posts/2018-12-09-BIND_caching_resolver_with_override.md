@@ -1,6 +1,7 @@
 ---
 layout: post
 title: BIND caching resolver with internal RRs
+published: false
 ---
 
 I needed to create a caching forwarder on a campus in Tanzania and 
