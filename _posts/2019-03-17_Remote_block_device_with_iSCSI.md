@@ -13,7 +13,15 @@ LXD containers on it!
 The iSCSI target (server) lives on FreeNAS which is just FreeBSD crippled up
 with a web gui.
 
+role=target
+initiatorname=iqn.2001-01.example.org:server
+IP=10.10.0.25
+
 The iSCSI initiator (client) lives on Ubuntu 18.04 on the EL-20.
+
+role=initiator
+initiatorname=iqn.1993-08.example.org:client
+IP=10.10.0.30
 
 The iSCSI service uses port 3260 by default. Keep this in mind if you have 
 host or network firewalls and can't connect your initiator to your target.
@@ -48,7 +56,8 @@ freenas# ctladm islist -v
 If there are credentials to access the target, you'll need to add them to 
 /etc/iscsi/iscsid.conf. It's also possible to limit connections to an IP 
 block. It's best to do both given that anyone with access to your block 
-devices can do serious damage.
+devices can do serious damage. It goes without saying that you should use 
+a dedicated network for any SAN.
 
 On the initiator, there are two programs that are needed to mount the block
 device; iscsid and open-iscsi. 
@@ -59,7 +68,7 @@ bionic# systemctl enable --now iscsid
 bionic# systemctl enable --now  open-iscsi
 
 bionic# iscsiadm -m discovery -t sendtargets -p freenas.example.org
-nas.example.org:3260,-1 iqn.2001-01.example.org:server:default-target
+freenas.example.org:3260,-1 iqn.2001-01.example.org:server:default-target
 
 bionic# iscsiadm -m node # -o show is implicit, -T $node.name for specific target
 # BEGIN RECORD 2.0-874
@@ -88,6 +97,7 @@ Target: iqn.2001-01.example.org:server:default-target (non-flash)
 		iSCSI Connection State: LOGGED IN
 		iSCSI Session State: LOGGED_IN
 		Internal iscsid Session State: NO CHANGE
+...
 
 bionic# lsblk --scsi
 NAME HCTL       TYPE VENDOR   MODEL             REV TRAN
@@ -116,7 +126,7 @@ you can see the sub-volumes that BTRFS creates as it clones containers:
 
 {%highlight bash %}
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# btrfs subvol list /media/freenas
+bionic# btrfs subvol list /media/freenas
 ID 257 gen 20586 top level 5 path containers
 ID 258 gen 20586 top level 5 path containers-snapshots
 ID 259 gen 56406 top level 5 path images
