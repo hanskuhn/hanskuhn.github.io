@@ -112,7 +112,7 @@ by creating entries in the signing table and keytable:
 *@example.com 20231205._domainkey.example.com
 {%endhighlight %}
 
-WARNING: These commands to set permissions work on my setup. Please
+WARNING: These commands work on my setup to fix the permissions. Please
 don't blindly copy these commands.
 
 {%highlight bash %}
@@ -135,6 +135,25 @@ Start milter-opendkim service
 {%highlight bash %}
 # service milter-opendkim start
 # service milter-opendkim status
+{%endhighlight %}
+
+### Publish the pubkey in DNS
+
+The public key was written to /var/db/dkim/example.com when
+we generated our keypair:
+
+{%highlight bash %}
+$ cat /var/db/dkim/example.com/20231205.txt
+{%endhighlight %}
+
+The pubkey is copy-paste-ready for BIND. Publish it in
+your zonefile, increment the serial number, and reload
+your zonefile.
+
+Then check your key:
+
+{%highlight bash %}
+$ dig TXT 20231205._domainkey.example.com. +short
 {%endhighlight %}
 
 ### Sendmail
@@ -166,15 +185,14 @@ define(`confINPUT_MAIL_FILTERS', `dkim-filter')dnl
 ## Testing
 
   - Send email to `check-auth@verifier.port25.com` which will reply with a report validating DKIM, SPF, rDNS
-  - Use <https://dkimvalidator.com/> to see if the key in DNS can validate signatures from from the milter
-  - Check `/var/log/maillog` for errors
+  - If you prefer the web, use <https://dkimvalidator.com/> to see if the key in DNS can validate signatures from from the milter
   - Check that the milter is handling incoming email correctly by looking in `/var/log/maillog` or mail headers of received msgs. Look for Authentication-Results header!
 
 ## Operations
 
-How often do you publish a new DKIM key? 
+How often should I publish a new keypair? 
 
-Should I expire and publish them periodically?
+Should I expire and publish private keys periodically? (cf. <https://blog.cryptographyengineering.com/2020/11/16/ok-google-please-publish-your-dkim-secret-keys/>)
 
 What monitoring is possible to ensure that deliverability is good? DMARC
 reports are probably a start, but jeez.
