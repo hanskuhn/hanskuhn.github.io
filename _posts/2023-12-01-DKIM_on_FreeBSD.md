@@ -48,50 +48,11 @@ Note: milter sockets must be accessible from postfix/smtpd;
   using inet sockets might be preferred.
 {%endhighlight %}
 
-I need to update my sendmail.cf, which I keep in RCS for version control
-as this was setup back when dinosaurs roamed the Earth:
+Let's configure OpenDKIM to use some sane defaults:
 
 {%highlight bash %}
-$ cd /etc/mail
-$ co -l example.com.mc
-$ vi example.com.mc
-{%endhighlight %}
-
-Here's the two lines that need to be added to your .mc file:
-
-{%highlight bash %}
-INPUT_MAIL_FILTER(`dkim-filter', `S=local:/var/run/dkim/opendkim.sock, F=T, T=R:2m')dnl
-define(`confINPUT_MAIL_FILTERS', `dkim-filter')dnl
-{%endhighlight %}
-
-{%highlight bash %}
-$ make  # ask m4 to do some magic to generate the .cf file
-$ cp sendmail.cf sendmail.cf.bak # just in case
-$ cp example.com.cf sendmail.cf
-$ ci -u example.com.mc
-{%endhighlight %}
-
-Now let's enable OpenDKIM, and ask it to run as a non-priv user that plays
-nicely with Sendmail:
-
-{%highlight bash %}
-$ cd /etc
-$ vi rc.conf
-{%endhighlight %}
-
-Here's the lines to be added to rc.conf:
-
-{%highlight bash %}
-milteropendkim_enable="YES"
-milteropendkim_uid="mailnull"
-milteropendkim_cfgfile="/usr/local/etc/mail/opendkim.conf"
-{%endhighlight %}
-
-Let's configure OpenDKIM to use some sane defaults
-
-{%highlight bash %}
-$ cd /usr/local/etc/mail
-$ vi opendkim.conf
+# cd /usr/local/etc/mail
+# vi opendkim.conf
 {%endhighlight %}
 
 Change these values in `opendkim.conf`:
@@ -110,47 +71,49 @@ SyslogSuccess    Yes
 UserID           mailnull:mailnull
 {%endhighlight %}
 
-## Final configuration
+## Generate keypair
 
-Generate a key to be stored in `/var/db/dkim/`. Consider '/usr/local/sbin/opendkim-genkey'
+Let's generate a key to be stored in `/var/db/dkim/` using '/usr/local/sbin/opendkim-genkey'.
 
 I'm going to use the following values for my keypair that will be used for signing outgoing
 email. The public key is stuffed into the DNS using the format 
 
 {%highlight bash %}
-'selector._domainkey.example.com IN TXT "v=DKIM1; k=rsa; p=VERYLONGSTRING"'
+selector._domainkey.example.com. IN TXT "v=DKIM1; k=rsa; p=VERYLONGSTRING"
 {%endhighlight %}
 
 {%highlight bash %}
-selector:        20231205 # a date is a common choice
+selector:        20231205 # date is a common choice
 domain:          example.com
-keylength:       2048 RSA 
+keylength:       2048
 privatekey_dir:  /var/db/dkim/example.com/
 {%endhighlight %}
 
 Let's make a keypair!
 {%highlight bash %}
-$ opendkim-genkey -r -s 20231205 -d example.com -t 2048 -D /var/db/dkim/example.com
+# opendkim-genkey -r -s 20231205 -d example.com -t 2048 -D /var/db/dkim/example.com
 {%endhighlight %}
 
-This will create two files  in `/var/db/dkim/example.com`. The private key will be **20231205.private**
-and the public key will be **20231205.txt**.
+This command created two files  in `/var/db/dkim/example.com`. The private key is **20231205.private**
+and the public key is **20231205.txt**.
 
-Now you need to tell OpenDKIM about your private key and what domain it is associated with.
-
-Do this by creating entries in the signing table and keytable:
+Let's tell OpenDKIM about our private key and what domain it is associated with
+by creating entries in the signing table and keytable:
 
 {%highlight bash %}
-# cat opendkim.keytable
+# cat /usr/local/etc/mail/opendkim.keytable
 
 20231205._domainkey.example.com example.com:20231205:/var/db/dkim/example.com/20231205.private
 {%endhighlight %}
 
 {%highlight bash %}
-# cat opendkim.signingtable
+# cat /usr/local/etc/mail/opendkim.signingtable
 
 *@example.com 20231205._domainkey.example.com
 {%endhighlight %}
+
+WARNING: These commands to set permissions work on my setup. Please
+don't blindly copy these commands.
 
 {%highlight bash %}
 # chgrp mailnull /usr/local/etc/mail/opendkim.*
@@ -158,10 +121,46 @@ Do this by creating entries in the signing table and keytable:
 # chown -R mailnull:mailnull /var/db/dkim
 {%endhighlight %}
 
-  Restart milter-opendkim service 
+Now let's enable OpenDKIM, and ask it to run as a non-priv user that plays
+nicely with Sendmail:
 
 {%highlight bash %}
-service milter-opendkim restart
+# sysrc milteropendkim_enable="YES"
+# sysrc milteropendkim_uid="mailnull"
+# sysrc milteropendkim_cfgfile="/usr/local/etc/mail/opendkim.conf"
+{%endhighlight %}
+
+Start milter-opendkim service 
+
+{%highlight bash %}
+# service milter-opendkim start
+# service milter-opendkim status
+{%endhighlight %}
+
+### Sendmail
+
+I need to update my sendmail.cf, which I keep in RCS for version control
+as this was setup back when dinosaurs roamed the Earth:
+
+{%highlight bash %}
+# cd /etc/mail
+# co -l example.com.mc
+# vi example.com.mc
+{%endhighlight %}
+
+Here's the two lines that need to be added to your .mc file:
+
+{%highlight bash %}
+INPUT_MAIL_FILTER(`dkim-filter', `S=local:/var/run/dkim/opendkim.sock, F=T, T=R:2m')dnl
+define(`confINPUT_MAIL_FILTERS', `dkim-filter')dnl
+{%endhighlight %}
+
+{%highlight bash %}
+# make  # ask m4 to do some magic to generate the .cf file
+# cp sendmail.cf sendmail.cf.bak # just in case
+# cp example.com.cf sendmail.cf
+# ci -u example.com.mc
+# service sendmail restart
 {%endhighlight %}
 
 ## Testing
