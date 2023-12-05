@@ -134,16 +134,23 @@ and the public key will be 20231205.txt.
 
 Now you need to tell OpenDKIM about your private key and what domain it is associated with.
 
-Do this by creating entries in the signing table and keytable
+Do this by creating entries in the signing table and keytable:
 
+{%highlight bash %}
     # cat opendkim.keytable
     20231205._domainkey.flyingpoodle.com flyingpoodle.com:20231205:/var/db/dkim/hanskuhn.com/sotired.private
+{%endhighlight %}
 
+{%highlight bash %}
     # cat opendkim.signingtable
     *@hanskuhn.com sotired._domainkey.hanskuhn.com
+{%endhighlight %}
+
+{%highlight bash %}
     # chgrp mailnull /usr/local/etc/mail/opendkim.*
     # chmod o-rwx /usr/local/etc/mail/opendkim.*
     # chown -R mailnull:mailnull /var/db/dkim
+{%endhighlight %}
 
   Restart milter-opendkim service `service milter-opendkim restart`
 
@@ -158,12 +165,10 @@ Operations
 
   How often do you publish a new DKIM key? Should I expire and publish them periodically?
  
-  Publish DMARC RR like this: _dmarc.hanskuhn.com TXT v=DMARC1; p=none; rua=mailto:dmarc@hanskuhn.com; ruf=mailto:dmarcfail@hanskuhn.com; sp=none; aspf=r; adkim=r; fo=1;
-
+  Publish DMARC RR like this: 
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+_dmarc.hanskuhn.com TXT v=DMARC1; p=none; rua=mailto:dmarc@hanskuhn.com; ruf=mailto:dmarcfail@hanskuhn.com; sp=none; aspf=r; adkim=r; fo=1;
 {%endhighlight %}
 
 {%highlight bash %}
