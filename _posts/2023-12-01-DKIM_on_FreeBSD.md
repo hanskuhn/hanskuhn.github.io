@@ -16,13 +16,14 @@ and signing outgoing messages.
 
 I use pkgng, so let's install OpenDKIM:
 
+{%highlight bash %}
 $ pkg install opendkim
+{%endhighlight %}
 
 The package maintainers have a few notes that are somewhat useful, if
 not complete:
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Message from opendkim-2.10.3_16:
 
@@ -47,7 +48,6 @@ Extra options can be found in startup script.
 Note: milter sockets must be accessible from postfix/smtpd;
   using inet sockets might be preferred.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 I need to update my sendmail.cf, which I keep in RCS for version control
@@ -55,63 +55,50 @@ as this was setup back when dinosaurs roamed the Earth:
 
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ cd /etc/mail
 $ co -l hiroshima.bogus.com.mc
 $ vi hiroshima.bogus.com.mc
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 Here's the two lines that need to be added to your .mc file:
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 INPUT_MAIL_FILTER(`dkim-filter', `S=local:/var/run/dkim/opendkim.sock, F=T, T=R:2m')dnl
 define(`confINPUT_MAIL_FILTERS', `dkim-filter')dnl
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ make  # ask m4 to do some magic to generate the .cf file
 $ cp sendmail.cf sendmail.cf.bak # just in case
 $ cp hiroshima.bogus.cf sendmail.cf
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 Now let's enable OpenDKIM, and ask it to run as a non-priv user that plays
 nicely with Sendmail:
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ cd /etc
 $ vi rc.conf
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 Here's the lines to be added to rc.conf:
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 milteropendkim_enable="YES"
 milteropendkim_uid="mailnull"
 milteropendkim_cfgfile="/usr/local/etc/mail/opendkim.conf"
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 Let's configure OpenDKIM to use some sane defaults
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ cd /usr/local/etc/mail
 $ vi opendkim.conf
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 Change these values in opendkim.conf:
 
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Canonicalization		relaxed/relaxed
 KeyTable						refile:/usr/local/etc/mail/opendkim.keytable
 LogWhy							yes # disable in prod
@@ -123,7 +110,6 @@ Socket							local:/var/run/dkim/opendkim.sock
 Syslog							Yes
 SyslogSuccess				Yes
 UserID							mailnull:mailnull
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 Final configuration
@@ -140,9 +126,7 @@ privatekey_dir: /var/db/dkim/flyingpoodle.com/
 
 Let's make a keypair!
 {%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 $ opendkim-genkey -r -s 20231205 -d flyingpoodle.com -t 2048 -D /var/db/dkim/flyingpoodle.com
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 This will create two file  in /var/db/dkim/flyingpoodle.com. The private key will be 20231205.private
