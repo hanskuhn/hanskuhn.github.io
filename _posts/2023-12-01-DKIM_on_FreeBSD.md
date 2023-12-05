@@ -99,17 +99,17 @@ $ vi opendkim.conf
 Change these values in opendkim.conf:
 
 {%highlight bash %}
-Canonicalization		relaxed/relaxed
-KeyTable						refile:/usr/local/etc/mail/opendkim.keytable
-LogWhy							yes # disable in prod
-MilterDebug					1   # disable in prod
-ReportAddress				"DKIM Error Postmaster" <postmaster@flyingpoodle.com>
-#Selector						sotired
-SigningTable				refile:/usr/local/etc/mail/opendkim.signingtable
-Socket							local:/var/run/dkim/opendkim.sock
-Syslog							Yes
-SyslogSuccess				Yes
-UserID							mailnull:mailnull
+Canonicalization relaxed/relaxed
+KeyTable         refile:/usr/local/etc/mail/opendkim.keytable
+LogWhy           yes # disable in prod
+MilterDebug      1   # disable in prod
+ReportAddress    "DKIM Error Postmaster" <postmaster@flyingpoodle.com>
+#Selector        sotired
+SigningTable     refile:/usr/local/etc/mail/opendkim.signingtable
+Socket           local:/var/run/dkim/opendkim.sock
+Syslog           Yes
+SyslogSuccess    Yes
+UserID           mailnull:mailnull
 {%endhighlight %}
 
 Final configuration
