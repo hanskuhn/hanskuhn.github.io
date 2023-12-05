@@ -132,7 +132,7 @@ Let's make a keypair!
 $ opendkim-genkey -r -s 20231205 -d example.com -t 2048 -D /var/db/dkim/example.com
 {%endhighlight %}
 
-This will create two file  in `/var/db/dkim/example.com`. The private key will be **20231205.private**
+This will create two files  in `/var/db/dkim/example.com`. The private key will be **20231205.private**
 and the public key will be **20231205.txt**.
 
 Now you need to tell OpenDKIM about your private key and what domain it is associated with.
