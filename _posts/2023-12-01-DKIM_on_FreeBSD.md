@@ -24,7 +24,6 @@ The package maintainers have a few notes that are somewhat useful, if
 not complete:
 
 {%highlight bash %}
-
 Message from opendkim-2.10.3_16:
 
 --
@@ -47,12 +46,10 @@ Extra options can be found in startup script.
 
 Note: milter sockets must be accessible from postfix/smtpd;
   using inet sockets might be preferred.
-
 {%endhighlight %}
 
 I need to update my sendmail.cf, which I keep in RCS for version control
 as this was setup back when dinosaurs roamed the Earth:
-
 
 {%highlight bash %}
 $ cd /etc/mail
@@ -96,7 +93,7 @@ $ cd /usr/local/etc/mail
 $ vi opendkim.conf
 {%endhighlight %}
 
-Change these values in opendkim.conf:
+Change these values in `opendkim.conf`:
 
 {%highlight bash %}
 Canonicalization relaxed/relaxed
@@ -112,7 +109,7 @@ SyslogSuccess    Yes
 UserID           mailnull:mailnull
 {%endhighlight %}
 
-Final configuration
+## Final configuration
 
 Generate a key to be stored in `/var/db/dkim/`. Consider '/usr/local/sbin/opendkim-genkey'
 
@@ -160,33 +157,37 @@ Do this by creating entries in the signing table and keytable:
 # chown -R mailnull:mailnull /var/db/dkim
 {%endhighlight %}
 
-  Restart milter-opendkim service `service milter-opendkim restart`
+  Restart milter-opendkim service 
 
-Testing
+{%highlight bash %}
+service milter-opendkim restart
+{%endhighlight %}
+
+## Testing
 
   - Send email to `check-auth@verifier.port25.com` which will reply with a report validating DKIM, SPF, rDNS
   - Use <https://dkimvalidator.com/> to see if the key in DNS can validate signatures from from the milter
   - Check `/var/log/maillog` for errors
-  - Check that the milter is handling incoming email correctly by looking in /var/log/maillog or mail headers of received msgs. Look for Authentication-Results header!
+  - Check that the milter is handling incoming email correctly by looking in `/var/log/maillog` or mail headers of received msgs. Look for Authentication-Results header!
 
-Operations
+## Operations
 
   - How often do you publish a new DKIM key? 
   - Should I expire and publish them periodically?
  
 Once DKIM is working, you'll probably want to publish a DMARC RR like this: 
 
-rua= Set the email address where you want DMARC aggregate reports delivered
+**rua=** Set the email address where you want DMARC aggregate reports delivered
 
-ruf= Set the email address where you want DMARC failure reports delivered
+**ruf=** Set the email address where you want DMARC failure reports delivered
 
-sp=none TODO
+**sp=none** TODO
 
-aspf=r SPF is relaxed
+**aspf=r** SPF is relaxed
 
-adkim=r DKIM is relaxed
+**adkim=r** DKIM is relaxed
 
-fo=1 Send DMARC failure reports to ruf=
+**fo=1** Send DMARC failure reports to ruf=
 
 {%highlight bash %}
 _dmarc.example.com TXT v=DMARC1; p=none; rua=mailto:dmarc@example.com; ruf=mailto:dmarcfail@example.com; sp=none; aspf=r; adkim=r; fo=1;
