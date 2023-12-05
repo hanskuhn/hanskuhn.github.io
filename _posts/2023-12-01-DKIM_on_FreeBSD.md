@@ -114,15 +114,21 @@ UserID           mailnull:mailnull
 
 Final configuration
 
-  Generate a key to be stored in /var/db/dkim/. Consider '/usr/local/sbin/opendkim-genkey'
+Generate a key to be stored in `/var/db/dkim/`. Consider '/usr/local/sbin/opendkim-genkey'
 
 I'm going to use the following values for my keypair that will be used for signing outgoing
-email. The public key is stuffed into the DNS using the format 'selector._domainkey.example.com IN TXT "v=DKIM1; k=rsa; p=VERYLONGSTRING"'
+email. The public key is stuffed into the DNS using the format 
 
-selector: 20231205 # a date is a common choice
-domain: example.com
-keylength: 2048 RSA 
-privatekey_dir: /var/db/dkim/example.com/
+{%highlight bash %}
+'selector._domainkey.example.com IN TXT "v=DKIM1; k=rsa; p=VERYLONGSTRING"'
+{%endhighlight %}
+
+{%highlight bash %}
+selector:        20231205 # a date is a common choice
+domain:          example.com
+keylength:       2048 RSA 
+privatekey_dir:  /var/db/dkim/example.com/
+{%endhighlight %}
 
 Let's make a keypair!
 {%highlight bash %}
@@ -137,19 +143,21 @@ Now you need to tell OpenDKIM about your private key and what domain it is assoc
 Do this by creating entries in the signing table and keytable:
 
 {%highlight bash %}
-    # cat opendkim.keytable
-    20231205._domainkey.example.com example.com:20231205:/var/db/dkim/example.com/20231205.private
+# cat opendkim.keytable
+
+20231205._domainkey.example.com example.com:20231205:/var/db/dkim/example.com/20231205.private
 {%endhighlight %}
 
 {%highlight bash %}
-    # cat opendkim.signingtable
-    *@example.com 20231205._domainkey.example.com
+# cat opendkim.signingtable
+
+*@example.com 20231205._domainkey.example.com
 {%endhighlight %}
 
 {%highlight bash %}
-    # chgrp mailnull /usr/local/etc/mail/opendkim.*
-    # chmod o-rwx /usr/local/etc/mail/opendkim.*
-    # chown -R mailnull:mailnull /var/db/dkim
+# chgrp mailnull /usr/local/etc/mail/opendkim.*
+# chmod o-rwx /usr/local/etc/mail/opendkim.*
+# chown -R mailnull:mailnull /var/db/dkim
 {%endhighlight %}
 
   Restart milter-opendkim service `service milter-opendkim restart`
@@ -158,22 +166,30 @@ Testing
 
   - Send email to `check-auth@verifier.port25.com` which will reply with a report validating DKIM, SPF, rDNS
   - Use <https://dkimvalidator.com/> to see if the key in DNS can validate signatures from from the milter
-  - Check /var/log/maillog for errors
+  - Check `/var/log/maillog` for errors
   - Check that the milter is handling incoming email correctly by looking in /var/log/maillog or mail headers of received msgs. Look for Authentication-Results header!
 
 Operations
 
-  How often do you publish a new DKIM key? Should I expire and publish them periodically?
+  - How often do you publish a new DKIM key? 
+  - Should I expire and publish them periodically?
  
-  Publish DMARC RR like this: 
+Once DKIM is working, you'll probably want to publish a DMARC RR like this: 
+
+rua= Set the email address where you want DMARC aggregate reports delivered
+
+ruf= Set the email address where you want DMARC failure reports delivered
+
+sp=none TODO
+
+aspf=r SPF is relaxed
+
+adkim=r DKIM is relaxed
+
+fo=1 Send DMARC failure reports to ruf=
 
 {%highlight bash %}
 _dmarc.example.com TXT v=DMARC1; p=none; rua=mailto:dmarc@example.com; ruf=mailto:dmarcfail@example.com; sp=none; aspf=r; adkim=r; fo=1;
-{%endhighlight %}
-
-{%highlight bash %}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {%endhighlight %}
 
 References:
