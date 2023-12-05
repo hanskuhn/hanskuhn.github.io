@@ -156,10 +156,10 @@ Do this by creating entries in the signing table and keytable:
 
 Testing
 
-  Send email to check-auth@verifier.port25.com which will reply with a report validating DKIM, SPF, rDNS
-  Use https://dkimvalidator.com/ to see if the key in DNS can validate signatures from from the milter
-  Check /var/log/maillog for errors
-  Check that the milter is handling incoming email correctly by looking in /var/log/maillog or mail headers of received msgs. Look for Authentication-Results header!
+  - Send email to `check-auth@verifier.port25.com` which will reply with a report validating DKIM, SPF, rDNS
+  - Use <https://dkimvalidator.com/> to see if the key in DNS can validate signatures from from the milter
+  - Check /var/log/maillog for errors
+  - Check that the milter is handling incoming email correctly by looking in /var/log/maillog or mail headers of received msgs. Look for Authentication-Results header!
 
 Operations
 
@@ -178,13 +178,13 @@ _dmarc.example.com TXT v=DMARC1; p=none; rua=mailto:dmarc@example.com; ruf=mailt
 
 References:
 
- - https://www.dan.me.uk/blog?post=7524cdb7315070816d1a15286b63346cbeded4fa
- - http://www.elandsys.com/resources/sendmail/dkim.html
- - https://petermolnar.net/article/howto-spf-dkim-dmarc-postfix/
- - https://www.skelleton.net/2015/03/21/how-to-eliminate-spam-and-protect-your-name-with-dmarc/
- - https://www.web-workers.ch/index.php/2019/10/21/how-to-configure-dkim-spf-dmarc-on-sendmail-for-multiple-domains-on-centos-7/
- - https://knowledge.validity.com/hc/en-us/articles/222438487-DKIM-signature-header-detail
- - https://www.mail-tester.com/
- - https://dkimvalidator.com/
- - https://dmarcian.com/dkim-inspector/
+ - <https://www.dan.me.uk/blog?post=7524cdb7315070816d1a15286b63346cbeded4fa>
+ - <http://www.elandsys.com/resources/sendmail/dkim.html>
+ - <https://petermolnar.net/article/howto-spf-dkim-dmarc-postfix/>
+ - <https://www.skelleton.net/2015/03/21/how-to-eliminate-spam-and-protect-your-name-with-dmarc/>
+ - <https://www.web-workers.ch/index.php/2019/10/21/how-to-configure-dkim-spf-dmarc-on-sendmail-for-multiple-domains-on-centos-7/>
+ - <https://knowledge.validity.com/hc/en-us/articles/222438487-DKIM-signature-header-detail>
+ - <https://www.mail-tester.com/>
+ - <https://dkimvalidator.com/>
+ - <https://dmarcian.com/dkim-inspector/>
  
