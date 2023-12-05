@@ -103,8 +103,8 @@ Canonicalization relaxed/relaxed
 KeyTable         refile:/usr/local/etc/mail/opendkim.keytable
 LogWhy           yes # disable in prod
 MilterDebug      1   # disable in prod
-ReportAddress    "DKIM Error Postmaster" <postmaster@flyingpoodle.com>
-#Selector        sotired
+ReportAddress    "DKIM Error Postmaster" <postmaster@example.com>
+#Selector        20231205
 SigningTable     refile:/usr/local/etc/mail/opendkim.signingtable
 Socket           local:/var/run/dkim/opendkim.sock
 Syslog           Yes
@@ -120,17 +120,17 @@ I'm going to use the following values for my keypair that will be used for signi
 email. The public key is stuffed into the DNS using the format 'selector._domainkey.example.com IN TXT "v=DKIM1; k=rsa; p=VERYLONGSTRING"'
 
 selector: 20231205 # a date is a common choice
-domain: flyingpoodle.com
+domain: example.com
 keylength: 2048 RSA 
-privatekey_dir: /var/db/dkim/flyingpoodle.com/
+privatekey_dir: /var/db/dkim/example.com/
 
 Let's make a keypair!
 {%highlight bash %}
-$ opendkim-genkey -r -s 20231205 -d flyingpoodle.com -t 2048 -D /var/db/dkim/flyingpoodle.com
+$ opendkim-genkey -r -s 20231205 -d example.com -t 2048 -D /var/db/dkim/example.com
 {%endhighlight %}
 
-This will create two file  in /var/db/dkim/flyingpoodle.com. The private key will be 20231205.private
-and the public key will be 20231205.txt.
+This will create two file  in `/var/db/dkim/example.com`. The private key will be **20231205.private**
+and the public key will be **20231205.txt**.
 
 Now you need to tell OpenDKIM about your private key and what domain it is associated with.
 
@@ -138,12 +138,12 @@ Do this by creating entries in the signing table and keytable:
 
 {%highlight bash %}
     # cat opendkim.keytable
-    20231205._domainkey.flyingpoodle.com flyingpoodle.com:20231205:/var/db/dkim/hanskuhn.com/sotired.private
+    20231205._domainkey.example.com example.com:20231205:/var/db/dkim/example.com/20231205.private
 {%endhighlight %}
 
 {%highlight bash %}
     # cat opendkim.signingtable
-    *@hanskuhn.com sotired._domainkey.hanskuhn.com
+    *@example.com 20231205._domainkey.example.com
 {%endhighlight %}
 
 {%highlight bash %}
@@ -168,7 +168,7 @@ Operations
   Publish DMARC RR like this: 
 
 {%highlight bash %}
-_dmarc.hanskuhn.com TXT v=DMARC1; p=none; rua=mailto:dmarc@hanskuhn.com; ruf=mailto:dmarcfail@hanskuhn.com; sp=none; aspf=r; adkim=r; fo=1;
+_dmarc.example.com TXT v=DMARC1; p=none; rua=mailto:dmarc@example.com; ruf=mailto:dmarcfail@example.com; sp=none; aspf=r; adkim=r; fo=1;
 {%endhighlight %}
 
 {%highlight bash %}
