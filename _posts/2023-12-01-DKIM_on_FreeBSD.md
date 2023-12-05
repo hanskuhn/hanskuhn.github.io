@@ -53,8 +53,8 @@ as this was setup back when dinosaurs roamed the Earth:
 
 {%highlight bash %}
 $ cd /etc/mail
-$ co -l hiroshima.bogus.com.mc
-$ vi hiroshima.bogus.com.mc
+$ co -l example.com.mc
+$ vi example.com.mc
 {%endhighlight %}
 
 Here's the two lines that need to be added to your .mc file:
@@ -67,7 +67,8 @@ define(`confINPUT_MAIL_FILTERS', `dkim-filter')dnl
 {%highlight bash %}
 $ make  # ask m4 to do some magic to generate the .cf file
 $ cp sendmail.cf sendmail.cf.bak # just in case
-$ cp hiroshima.bogus.cf sendmail.cf
+$ cp example.com.cf sendmail.cf
+$ ci -u example.com.mc
 {%endhighlight %}
 
 Now let's enable OpenDKIM, and ask it to run as a non-priv user that plays
@@ -172,8 +173,14 @@ service milter-opendkim restart
 
 ## Operations
 
-  - How often do you publish a new DKIM key? 
-  - Should I expire and publish them periodically?
+How often do you publish a new DKIM key? 
+
+Should I expire and publish them periodically?
+
+What monitoring is possible to ensure that deliverability is good? DMARC
+reports are probably a start, but jeez.
+
+### DMARC
  
 Once DKIM is working, you'll probably want to publish a DMARC RR like this: 
 
