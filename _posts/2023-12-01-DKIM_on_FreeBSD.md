@@ -91,7 +91,7 @@ privatekey_dir:  /var/db/dkim/example.com/
 
 Let's make a keypair!
 {%highlight bash %}
-# opendkim-genkey -r -s 20231205 -d example.com -t 2048 -D /var/db/dkim/example.com
+# opendkim-genkey -r -s 20231205 -d example.com -b 2048 --notestmode -D /var/db/dkim/example.com
 {%endhighlight %}
 
 This command created two files  in `/var/db/dkim/example.com`. The private key is **20231205.private**
